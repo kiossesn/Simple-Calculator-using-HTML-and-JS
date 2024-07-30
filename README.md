@@ -1,3 +1,4 @@
+# Simple-Calculator-using-HTML-and-JS
 Operations:
 <pre>
     Addition
