@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Calculator App</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/10.0.1/math.min.js"></script>
+    <style>
+        .theme{
+            background-color: #1eb8da;
+            background-image: url("https://upload.wikimedia.org/wikipedia/commons/thumb/a/a3/Arithmetic_symbols.svg/1200px-Arithmetic_symbols.svg.png");
+            background-size: 350px;
+            background-position: center;
+            background-repeat: unset;
+        }
+        .theme::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: inherit;
+            filter: blur(2px); /* Adjust the blur value as needed */
+            z-index: -1; /* Ensure the blur effect stays behind the content */
+        }
+        h2{
+            color: white;
+        }
+        .container {
+            background-color: #403535;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
+            margin: auto;
+            z-index: 1;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            color: white;
+            display: block;
+            margin-bottom: 5px;
+        }
+        input[type="number"], select {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+        }
+        button {
+            padding: 10px 15px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .result {
+            color: white;
+            margin-top: 15px;
+            font-size: 1.2em;
+        }
+        input[type="number"]:disabled {
+            background-color: #e9ecef;
+        }
+        footer{
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 10px;
+            position: fixed; /* Position the footer at the bottom */
+            bottom: 0;
+            width: 100%;
+            left: 0;
+            z-index: 1;
+        }
+    </style>
+</head>
+
+<body class="theme">
+    <div class="container">
+        <h2>Simple Calculator App</h2>
+        <div class="form-group">
+            <label for="numberA">Number A:</label>
+            <input type="number" id="numberA" placeholder="Enter first number">
+        </div>
+        <div class="form-group">
+            <label for="operation">Operation:</label>
+            <select id="operation" onchange="toggleNumberB()">
+                <option value="add">Addition</option>
+                <option value="subtract">Subtraction</option>
+                <option value="multiply">Multiplication</option>
+                <option value="divide">Division</option>
+                <option value="square">Square</option>
+                <option value="sqrt">SquareRoot</option>
+                <option value="gcd">GCD</option>
+                <option value="mod">Modulo</option>
+                <option value="modInverse">ModInverse</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="numberB">Number B:</label>
+            <input type="number" id="numberB" placeholder="Enter second number">
+        </div>
+        <button onclick="calculate()">Calculate</button>
+        <div class="result" id="result"></div>
+    </div>
+    <footer>
+        &copy; 2024 Kiossesn. All rights reserved.
+    </footer>
+
+    <script>
+    function toggleNumberB() {
+        const operation = document.getElementById('operation').value;
+        const numberBInput = document.getElementById('numberB');
+
+        if (operation === 'square' || operation=== 'sqrt') {
+            numberBInput.disabled = true;
+            numberBInput.value = '';
+        } else {
+            numberBInput.disabled = false;
+        }
+    }
+
+    function modInverse(a, m) {
+        let m0 = m, t, q;
+        let x0 = 0, x1 = 1;
+
+        if (m === 1) return 0;
+
+        // Apply extended Euclid Algorithm
+        while (a > 1) {
+            // q is quotient
+            q = Math.floor(a / m);
+
+            t = m;
+
+            // m is remainder now, process same as Euclid's algorithm
+            m = a % m;
+            a = t;
+
+            t = x0;
+
+            x0 = x1 - q * x0;
+            x1 = t;
+        }
+
+        // Make x1 positive
+        if (x1 < 0) x1 += m0;
+
+        return x1;
+    }
+
+    function calculate() {
+        const numberA = parseFloat(document.getElementById('numberA').value);
+        const numberB = parseFloat(document.getElementById('numberB').value);
+        const operation = document.getElementById('operation').value;
+        let result;
+
+        if (isNaN(numberA) || (operation !== 'square' && operation !== 'sqrt' && isNaN(numberB)) ) {
+            document.getElementById('result').innerText = 'Please enter valid numbers.';
+            return;
+        }
+
+        switch (operation) {
+            case 'add':
+                result = math.add(numberA, numberB);
+                break;
+            case 'subtract':
+                result = math.subtract(numberA, numberB);
+                break;
+            case 'multiply':
+                result = math.multiply(numberA, numberB);
+                break;
+            case 'divide':
+                if (numberB === 0) {
+                    document.getElementById('result').innerText = 'Cannot divide by zero.';
+                    return;
+                }
+                result = math.divide(numberA, numberB);
+                break;
+            case 'square':
+                result = math.square(numberA);
+                break;
+            case 'sqrt':
+                if (numberA<0){
+                    document.getElementById('result').innerText = 'The number must be positive';
+                    return;
+                }
+                result = math.sqrt(numberA);
+                break;
+            case 'gcd':
+                result = math.gcd(numberA, numberB);
+                break;
+            case 'mod':
+                result = math.mod(numberA, numberB);
+                break;
+            case 'modInverse':
+                if (math.gcd(numberA, numberB) !== 1) {
+                    document.getElementById('result').innerText = 'The two numbers are not coprime';
+                    return;
+                }
+                if (numberA<=0 || numberB<=0) {
+                    document.getElementById('result').innerText = 'The two numbers must be positive';
+                    return;
+                }
+                result = modInverse(numberA, numberB);
+                break;
+            default:
+                result = 'Invalid operation';
+        }
+
+        document.getElementById('result').innerText = `Result: ${result}`;
+    }
+    </script>
+</body>
+</html>
