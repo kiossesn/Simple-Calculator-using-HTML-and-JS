@@ -1,0 +1,12 @@
+Operations:
+<pre>
+    Addition
+    Subtraction
+    Multiplication
+    Division
+    Square
+    SquareRoot
+    GCD
+    Modulo
+    ModInverse
+</pre>
