@@ -10,4 +10,6 @@ Operations:
     GCD
     Modulo
     ModInverse
+    Derivative
+    Integral
 </pre>
