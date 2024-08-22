@@ -8,8 +8,8 @@
     <style>
         .theme{
             background-color: #1eb8da;
-            background-image: url("https://upload.wikimedia.org/wikipedia/commons/thumb/a/a3/Arithmetic_symbols.svg/1200px-Arithmetic_symbols.svg.png");
-            background-size: 350px;
+            background-image: url("https://img.freepik.com/free-photo/brown-concrete-wall-with-scratches-vector_53876-143109.jpg?size=626&ext=jpg&ga=GA1.1.2008272138.1724025600&semt=ais_hybrid");
+            background-size: cover;
             background-position: center;
             background-repeat: unset;
         }
@@ -21,7 +21,7 @@
             right: 0;
             bottom: 0;
             background: inherit;
-            filter: blur(2px); /* Adjust the blur value as needed */
+            filter: blur(1px); /* Adjust the blur value as needed */
             z-index: -1; /* Ensure the blur effect stays behind the content */
         }
         h2{
@@ -31,10 +31,12 @@
             background-color: #403535;
             padding: 20px;
             border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            max-width: 400px;
-            margin: auto;
-            z-index: 1;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.4); /* Fixed opacity issue */
+            width: 400px;
+            position: fixed;
+            top: 130px;
+            left: 540px;
+
         }
         .form-group {
             margin-bottom: 15px;
@@ -44,10 +46,17 @@
             display: block;
             margin-bottom: 5px;
         }
-        input[type="number"], select {
-            width: 100%;
-            padding: 8px;
-            box-sizing: border-box;
+        select{
+            width: 400px; /* Set a fixed width */
+            padding: 8px; /* Set padding */
+            font-size: 16px; /* Set a consistent font size */
+            box-sizing: border-box; /* Ensures padding doesn't affect total width */
+        }
+        input {
+            width: 400px; /* Set a fixed width */
+            padding: 8px; /* Set padding */
+            font-size: 16px; /* Set a consistent font size */
+            box-sizing: border-box; /* Ensures padding doesn't affect total width */
         }
         button {
             padding: 10px 15px;
@@ -61,9 +70,6 @@
             color: white;
             margin-top: 15px;
             font-size: 1.2em;
-        }
-        input[type="number"]:disabled {
-            background-color: #e9ecef;
         }
         footer{
             background-color: #333;
@@ -84,11 +90,11 @@
         <h2>Simple Calculator App</h2>
         <div class="form-group">
             <label for="numberA">Number A:</label>
-            <input type="number" id="numberA" placeholder="Enter first number">
+            <input id="numberA" placeholder="Enter first number">
         </div>
         <div class="form-group">
             <label for="operation">Operation:</label>
-            <select id="operation" onchange="toggleNumberB()">
+            <select id="operation" onchange="exemptions()">
                 <option value="add">Addition</option>
                 <option value="subtract">Subtraction</option>
                 <option value="multiply">Multiplication</option>
@@ -98,11 +104,13 @@
                 <option value="gcd">GCD</option>
                 <option value="mod">Modulo</option>
                 <option value="modInverse">ModInverse</option>
+                <option value="derivative">Derivative f′(x)</option>
+                <option value="integral">Integral ∫</option>
             </select>
         </div>
         <div class="form-group">
             <label for="numberB">Number B:</label>
-            <input type="number" id="numberB" placeholder="Enter second number">
+            <input id="numberB" placeholder="Enter second number">
         </div>
         <button onclick="calculate()">Calculate</button>
         <div class="result" id="result"></div>
@@ -112,107 +120,201 @@
     </footer>
 
     <script>
-    function toggleNumberB() {
-        const operation = document.getElementById('operation').value;
-        const numberBInput = document.getElementById('numberB');
 
-        if (operation === 'square' || operation=== 'sqrt') {
-            numberBInput.disabled = true;
-            numberBInput.value = '';
-        } else {
-            numberBInput.disabled = false;
-        }
-    }
+        function exemptions() {
+            const operation = document.getElementById('operation').value;
+            const numberBInput = document.getElementById('numberB');
+            const numberAInput = document.getElementById('numberA');
 
-    function modInverse(a, m) {
-        let m0 = m, t, q;
-        let x0 = 0, x1 = 1;
-
-        if (m === 1) return 0;
-
-        // Apply extended Euclid Algorithm
-        while (a > 1) {
-            // q is quotient
-            q = Math.floor(a / m);
-
-            t = m;
-
-            // m is remainder now, process same as Euclid's algorithm
-            m = a % m;
-            a = t;
-
-            t = x0;
-
-            x0 = x1 - q * x0;
-            x1 = t;
+            if (operation === 'square' || operation === 'sqrt' || operation === 'derivative') {
+                numberBInput.disabled = true;
+                numberBInput.value = '';
+            } else {
+                numberBInput.disabled = false;
+            }
+            if (operation === 'derivative' || operation === 'integral'){
+                numberAInput.placeholder="Example: 2x^3+x^2+x+1"
+            }
+            if (operation === 'integral'){
+                numberBInput.placeholder='Limits. Example: 0,1'
+            }
         }
 
-        // Make x1 positive
-        if (x1 < 0) x1 += m0;
+        // Inverse modulo calculation
+        function modInverse(a, m) {
+            let m0 = m, t, q;
+            let x0 = 0, x1 = 1;
 
-        return x1;
-    }
+            if (m === 1) return 0;
 
-    function calculate() {
-        const numberA = parseFloat(document.getElementById('numberA').value);
-        const numberB = parseFloat(document.getElementById('numberB').value);
-        const operation = document.getElementById('operation').value;
-        let result;
+            // Apply extended Euclid Algorithm
+            while (a > 1) {
+                // q is quotient
+                q = Math.floor(a / m);
 
-        if (isNaN(numberA) || (operation !== 'square' && operation !== 'sqrt' && isNaN(numberB)) ) {
-            document.getElementById('result').innerText = 'Please enter valid numbers.';
-            return;
+                t = m;
+
+                // m is remainder now, process same as Euclid's algorithm
+                m = a % m;
+                a = t;
+
+                t = x0;
+
+                x0 = x1 - q * x0;
+                x1 = t;
+            }
+
+            // Make x1 positive
+            if (x1 < 0) x1 += m0;
+
+            return x1;
         }
 
-        switch (operation) {
-            case 'add':
-                result = math.add(numberA, numberB);
-                break;
-            case 'subtract':
-                result = math.subtract(numberA, numberB);
-                break;
-            case 'multiply':
-                result = math.multiply(numberA, numberB);
-                break;
-            case 'divide':
-                if (numberB === 0) {
-                    document.getElementById('result').innerText = 'Cannot divide by zero.';
-                    return;
-                }
-                result = math.divide(numberA, numberB);
-                break;
-            case 'square':
-                result = math.square(numberA);
-                break;
-            case 'sqrt':
-                if (numberA<0){
-                    document.getElementById('result').innerText = 'The number must be positive';
-                    return;
-                }
-                result = math.sqrt(numberA);
-                break;
-            case 'gcd':
-                result = math.gcd(numberA, numberB);
-                break;
-            case 'mod':
-                result = math.mod(numberA, numberB);
-                break;
-            case 'modInverse':
-                if (math.gcd(numberA, numberB) !== 1) {
-                    document.getElementById('result').innerText = 'The two numbers are not coprime';
-                    return;
-                }
-                if (numberA<=0 || numberB<=0) {
-                    document.getElementById('result').innerText = 'The two numbers must be positive';
-                    return;
-                }
-                result = modInverse(numberA, numberB);
-                break;
-            default:
-                result = 'Invalid operation';
+        // Derivative calculation
+        function derivativeCalc(expression){
+            // Define the variable for differentiation
+            const variable = 'x';
+
+            // Calculate the derivative
+            const derivative = math.derivative(expression, variable);
+
+            return derivative.toString();
         }
 
-        document.getElementById('result').innerText = `Result: ${result}`;
+        // Integral calculation with trapezoidal rule
+        function trapezoidalRule(f, a, b, n) {
+            const h = (b - a) / n;
+            let sum = 0.5 * (f(a) + f(b));
+
+            for (let i = 1; i < n; i++) {
+                const x = a + i * h;
+                sum += f(x);
+            }
+
+            return sum * h;
+        }
+
+        // Make the function given by the user readable by the program
+        function parseFunction(fnString) {
+            // Replace '^' with '**' to make it work with JavaScript
+            const safeString = fnString.replace(/\^/g, '**');
+            return function(x) {
+                return eval(safeString);
+            };
+        }
+
+        // Calculate integral
+        function integralCalc(expression, limits){
+            const n = 1000;
+            // Split the limits string by the comma
+            const numbers = limits.split(',');
+            const downlimit = parseFloat(numbers[0]);
+            const uplimit = parseFloat(numbers[1]);
+
+            // Make the function given by the user readable by the program
+            const userFunction = parseFunction(expression);
+            // Integral calculation with trapezoidal rule
+            const result = trapezoidalRule(userFunction, downlimit, uplimit, n);
+
+            return result;
+        }
+
+        // Check if the entire string is a valid number
+        function isStrictlyNumeric(str) {
+            return !isNaN(str) && !isNaN(parseFloat(str)) && str.trim() === parseFloat(str).toString();
+        }
+
+        function calculate() {
+            // Input
+            const operation = document.getElementById('operation').value;
+            let result;
+            const numberA = document.getElementById('numberA').value;
+            const numberB = document.getElementById('numberB').value;
+
+            // Check for errors in input
+            if (operation === 'add' || operation === 'subtract' || operation === 'multiply' || operation === 'divide' || operation === 'gcd' || operation === 'mod' || operation === 'modInverse'){
+                if (numberA.trim() === "" || numberB.trim() === "") {
+                    document.getElementById('result').innerText = 'Fill in the required fields';
+                    return;
+                }
+                if (isStrictlyNumeric(numberA) === false || isStrictlyNumeric(numberB) === false){
+                    document.getElementById('result').innerText = 'Invalid input';
+                    return;
+                }
+            }
+            if (operation === 'square' || operation === 'sqrt'){
+                if (numberA.trim() === ""){
+                    document.getElementById('result').innerText = 'Fill in the required fields';
+                    return;
+                }
+                if (isStrictlyNumeric(numberA) === false){
+                    document.getElementById('result').innerText = 'Invalid input';
+                    return;
+                }
+            }
+
+            if (operation === 'derivative'){
+                if (numberA.trim() === "" ) {
+                    document.getElementById('result').innerText = 'Fill in the required fields';
+                    return;
+                }
+            }
+
+            // Proceed the operation
+            switch (operation) {
+                case 'add':
+                    result = math.add(numberA, numberB);
+                    break;
+                case 'subtract':
+                    result = math.subtract(numberA, numberB);
+                    break;
+                case 'multiply':
+                    result = math.multiply(numberA, numberB);
+                    break;
+                case 'divide':
+                    if (numberB === 0) {
+                        document.getElementById('result').innerText = 'Cannot divide by zero.';
+                        return;
+                    }
+                    result = math.divide(numberA, numberB);
+                    break;
+                case 'square':
+                    result = math.square(numberA);
+                    break;
+                case 'sqrt':
+                    if (numberA<0){
+                        document.getElementById('result').innerText = 'The number must be positive';
+                        return;
+                    }
+                    result = math.sqrt(numberA);
+                    break;
+                case 'gcd':
+                    result = math.gcd(numberA, numberB);
+                    break;
+                case 'mod':
+                    result = math.mod(numberA, numberB);
+                    break;
+                case 'modInverse':
+                    if (math.gcd(numberA, numberB) !== 1) {
+                        document.getElementById('result').innerText = 'The two numbers are not coprime';
+                        return;
+                    }
+                    if (numberA<=0 || numberB<=0) {
+                        document.getElementById('result').innerText = 'The two numbers must be positive';
+                        return;
+                    }
+                    result = modInverse(numberA, numberB);
+                    break;
+                case 'derivative':
+                    result = derivativeCalc(numberA);
+                    break;
+                case 'integral':
+                    result = integralCalc(numberA, numberB);
+                    break;
+                default:
+                    result = 'Invalid operation';
+            }
+            document.getElementById('result').innerText = `Result: ${result}`;
     }
     </script>
 </body>
