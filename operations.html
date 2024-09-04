@@ -129,14 +129,20 @@
             if (operation === 'square' || operation === 'sqrt' || operation === 'derivative') {
                 numberBInput.disabled = true;
                 numberBInput.value = '';
-            } else {
+            }
+            else {
                 numberBInput.disabled = false;
             }
             if (operation === 'derivative' || operation === 'integral'){
                 numberAInput.placeholder="Example: 2x^3+x^2+x+1"
             }
             if (operation === 'integral'){
+                numberAInput.placeholder="Example: 2x^3+x^2+x+1"
                 numberBInput.placeholder='Limits. Example: 0,1'
+            }
+            if (operation === 'add' || operation === 'square' || operation === 'sqrt' || operation === 'subtract' || operation === 'multiply' || operation === 'divide' || operation === 'gcd' || operation === 'mod' || operation === 'modInverse'){
+                numberAInput.placeholder='Enter first number'
+                numberBInput.placeholder='Enter second number'
             }
         }
 
@@ -315,7 +321,7 @@
                     result = 'Invalid operation';
             }
             document.getElementById('result').innerText = `Result: ${result}`;
-    }
+        }
     </script>
 </body>
 </html>
